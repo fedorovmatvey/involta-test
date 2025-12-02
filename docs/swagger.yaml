@@ -1,0 +1,222 @@
+basePath: /
+definitions:
+  model.CreateDocumentRequest:
+    properties:
+      description:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/model.FirstLevelItem'
+        type: array
+      title:
+        type: string
+    type: object
+  model.Document:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      internal:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/model.FirstLevelItem'
+        type: array
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.DocumentList:
+    properties:
+      documents:
+        items:
+          $ref: '#/definitions/model.Document'
+        type: array
+      page:
+        type: integer
+      per_page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  model.FirstLevelItem:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      second_level:
+        items:
+          $ref: '#/definitions/model.SecondLevelItem'
+        type: array
+      sort:
+        type: integer
+      value:
+        type: string
+    type: object
+  model.SecondLevelItem:
+    properties:
+      content:
+        type: string
+      id:
+        type: string
+      status:
+        type: string
+      type:
+        type: string
+    type: object
+  model.UpdateDocumentRequest:
+    properties:
+      description:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/model.FirstLevelItem'
+        type: array
+      title:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Microservice for document management with Reindexer storage.
+  title: Involta Reindexer Service
+  version: "1.0"
+paths:
+  /api/v1/documents:
+    get:
+      consumes:
+      - application/json
+      description: Get all documents with pagination and sorting
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DocumentList'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List Documents
+      tags:
+      - documents
+    post:
+      consumes:
+      - application/json
+      description: Create a new document with nested items
+      parameters:
+      - description: Document payload
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateDocumentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Document'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create Document
+      tags:
+      - documents
+  /api/v1/documents/{id}:
+    delete:
+      description: Remove a document by ID
+      parameters:
+      - description: Document ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete Document
+      tags:
+      - documents
+    get:
+      description: Get a document by ID (cached)
+      parameters:
+      - description: Document ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Document'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Document
+      tags:
+      - documents
+    put:
+      consumes:
+      - application/json
+      description: Update fields of an existing document
+      parameters:
+      - description: Document ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update payload
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateDocumentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Document'
+      summary: Update Document
+      tags:
+      - documents
+swagger: "2.0"

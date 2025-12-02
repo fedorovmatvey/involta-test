@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: go-api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - reindexer
+    volumes:
+      - ./config.yaml:/app/config.yaml   # если нужно менять без пересборки
+    environment:
+      - APP_ENV=development
+
+  reindexer:
+    image: reindexer/reindexer
+    container_name: reindexer
+    ports:
+      - "9088:9088"
+      - "6534:6534"
+    volumes:
+      - reindexer_data:/db
+    restart: always
+
+volumes:
+  reindexer_data:

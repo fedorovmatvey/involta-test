@@ -1,0 +1,18 @@
+server:
+  port: 8080
+  read_timeout: 10s
+  write_timeout: 10s
+  idle_timeout: 60s
+
+reindexer:
+  dsn: "cproto://reindexer:6534/documents_db"
+  namespace: "documents"
+
+cache:
+  ttl: 15m
+  cleanup_interval: 30m
+  capacity: 1000
+
+app:
+  env: "development"
+  log_level: "info"
